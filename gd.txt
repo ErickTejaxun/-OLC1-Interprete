@@ -1,0 +1,32 @@
+digraph G
+{
+N459761643[label="instrucciones"]; 
+N467471508[label="[declaracion]declaracion"]; 
+N1686042971[label="[imprimir]imprimir"]; 
+N459761643->N467471508 [dir=none] ; 
+N467471508->N459761643  ; 
+N459761643->N1686042971 [dir=none] ; 
+N1686042971->N459761643  ; 
+N467471508[label="declaracion"]; 
+N8125361[label="[nombre]contador"]; 
+N545492074[label="[suma]+"]; 
+N467471508->N8125361 [dir=none] ; 
+N8125361->N467471508  ; 
+N467471508->N545492074 [dir=none] ; 
+N545492074->N467471508  ; 
+N8125361[label="contador"]; 
+N545492074[label="+"]; 
+N1405721922[label="[decimal]10.5"]; 
+N1089344065[label="[entero]10"]; 
+N545492074->N1405721922 [dir=none] ; 
+N1405721922->N545492074  ; 
+N545492074->N1089344065 [dir=none] ; 
+N1089344065->N545492074  ; 
+N1405721922[label="10.5"]; 
+N1089344065[label="10"]; 
+N1686042971[label="imprimir"]; 
+N521654174[label="[variable]contador"]; 
+N1686042971->N521654174 [dir=none] ; 
+N521654174->N1686042971  ; 
+N521654174[label="contador"]; 
+}

@@ -1,0 +1,71 @@
+package AnalisisHTML; // Paquete
+import java_cup.runtime.*; 
+import java.util.ArrayList;
+import Utilidades.*;
+parser code
+{:
+
+    public ArrayList<String> listaClaves = new ArrayList<String>();
+    public String errores;
+    public String titulo="";    
+
+    public void syntax_error(Symbol s)
+    {
+
+
+        //ErrorC(String descripcion, int linea, int columna, String valor, String archivo)
+        Singlenton.registrarError(new ErrorC("Error sintactico. El analizador se recupero tras el error",(s.right+1), (s.left+1), s.value.toString(), "----"));  
+
+    }
+
+    /**Metodo al que se llama en el momento en que ya no es posible una recuperación de errores.*/
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception
+    {
+
+        Singlenton.registrarError(new ErrorC("Error sintactico. El analizador se recupero tras el error",(s.right+1), (s.left+1), s.value.toString(), "----"));             
+    }
+    
+:}
+
+
+/*Terminales*/
+
+terminal rhtml, rhead, rtitle, rnoufe, rdiv, rid, menorque, mayorque, diagonal, igual, rbody ;
+terminal String cadena;
+
+/*No terminales*/
+non terminal INICIO;
+non terminal String CABECERA, TITULO;
+
+
+/* ­­­­­­­­­­­­­­ Definición de la gramatica  ­­­­­­­­­­­ */
+start with INICIO; // indicamos con qué producción debe empezar la gramatica.
+
+
+
+INICIO::= CABECERA:tit {: titulo = tit;:} ;
+
+CABECERA::= menorque rhead mayorque TITULO:tit menorque diagonal rhead mayorque {: RESULT = tit;:}
+;
+
+TITULO::=  menorque rtitle mayorque cadena:tit menorque diagonal rtitle mayorque{: RESULT = tit;:}
+;
+
+
+
+/**  
+    <head>
+        <title>Sistema de control</title>
+    </head>
+
+    <html>
+    <head>
+        <title>Sistema de control</title>
+    </head>
+    <body>
+        <noufe>No se ha encontrado componentes para esta aplicación</noufe>
+        <div id="root"></div>
+    </body>
+    </html>
+**/
+            

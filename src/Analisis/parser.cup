@@ -1,0 +1,83 @@
+package Analisis; // Paquete
+import java_cup.runtime.*; 
+import java.util.ArrayList;
+import Utilidades.*;
+import Analisis.Arbol.*;
+parser code
+{:
+
+    public ArrayList<String> listaClaves = new ArrayList<String>();
+    public String errores;
+
+    public Nodo raizAST;
+
+    public void syntax_error(Symbol s)
+    {
+
+
+        //ErrorC(String descripcion, int linea, int columna, String valor, String archivo)
+        Singlenton.registrarError(new ErrorC("Error sintactico. El analizador se recupero tras el error",(s.right+1), (s.left+1), s.value.toString(), "----"));  
+
+    }
+
+    /**Metodo al que se llama en el momento en que ya no es posible una recuperación de errores.*/
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception
+    {
+
+        Singlenton.registrarError(new ErrorC("Error sintactico. El analizador se recupero tras el error",(s.right+1), (s.left+1), s.value.toString(), "----"));             
+    }
+    
+:}
+
+
+/*Terminales*/
+
+terminal String entero;
+terminal String decimal;
+terminal String booleano;
+terminal var, asignacion, coma, puntocoma, suma, imprimir, pard, pari;
+terminal String id, cadena;
+/*No terminales*/
+non terminal INICIO;
+
+non terminal Nodo EXPRESION;
+non terminal Nodo DECLARACION;
+non terminal Nodo LINSTRUCCCION, INSTRUCCION;
+non terminal Nodo IMPRIMIR;
+non terminal ArrayList<String> CLAVES, LCLAVES;
+
+/* ­­­­­­­­­­­­­­ Definición de la gramatica  ­­­­­­­­­­­ */
+precedence left suma;
+
+
+start with INICIO; // indicamos con qué producción debe empezar la gramatica.
+
+
+
+INICIO::= LINSTRUCCCION:nodo {: raizAST = nodo;:};
+
+LINSTRUCCCION::= LINSTRUCCCION:lista INSTRUCCION:inst {: RESULT = lista; RESULT.addHijo(inst);:}
+                |INSTRUCCION:inst {: RESULT = new Nodo("instrucciones","instrucciones",instleft, instright); RESULT.addHijo(inst); :}
+;
+
+INSTRUCCION::= DECLARACION:inst{:RESULT = inst;:}
+             | IMPRIMIR:inst{:RESULT = inst;:}; 
+
+IMPRIMIR::= imprimir:valor pari EXPRESION:expr pard puntocoma {: RESULT = new Nodo("imprimir", "imprimir", valorleft, valorright); RESULT.addHijo(expr);:}
+;
+
+DECLARACION::= var id:nombre asignacion EXPRESION:valor puntocoma
+                    {: 
+                        RESULT = new Nodo("declaracion","declaracion",nombreleft, nombreright);  
+                        RESULT.addHijo(new Nodo("nombre",nombre, nombreleft, nombreright));
+                        RESULT.addHijo(valor);
+                    :}
+                    ;
+
+EXPRESION::= EXPRESION:nodoI suma:valor EXPRESION:nodoD {:  RESULT = new Nodo("suma", "+", valorleft, valorright); RESULT.addHijo(nodoI); RESULT.addHijo(nodoD); :}
+            |cadena:valor {:  RESULT = new Nodo("cadena", valor, valorleft, valorright); :}
+            |entero:valor {:  RESULT = new Nodo("entero", valor, valorleft, valorright); :}
+            |decimal:valor {:  RESULT = new Nodo("decimal", valor, valorleft, valorright); :}
+            |booleano:valor {:  RESULT = new Nodo("booleano", valor, valorleft, valorright); :}
+            |id:valor {:  RESULT = new Nodo("variable", valor, valorleft, valorright); :}
+            ;
